@@ -11,14 +11,17 @@ class SendMail extends Notification implements ShouldQueue
 {
 	use Queueable;
 
+
+	public $user;
+
 	/**
 	 * Create a new notification instance.
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct($user)
 	{
-		//
+		$this->user = $user;
 	}
 
 	/**
@@ -29,7 +32,7 @@ class SendMail extends Notification implements ShouldQueue
 	 */
 	public function via($notifiable)
 	{
-		return ['mail'];
+		return ['mail', 'database'];
 	}
 
 	/**
@@ -45,8 +48,8 @@ class SendMail extends Notification implements ShouldQueue
 		// 	->action('Notification Action', url('/'))
 		// 	->line('Thank you for using our application!');
 
-		return (new MailMessage)->view('emails.sendmail');
-	} 
+		return (new MailMessage)->view('emails.sendmail', ['user' => $this->user]);
+	}
 
 	/**
 	 * Get the array representation of the notification.
@@ -57,7 +60,7 @@ class SendMail extends Notification implements ShouldQueue
 	public function toArray($notifiable)
 	{
 		return [
-			//
+			'user' => $this->user
 		];
 	}
 }
