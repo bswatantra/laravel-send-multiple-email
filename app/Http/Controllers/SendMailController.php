@@ -10,9 +10,10 @@ class SendMailController extends Controller
 	public function __invoke()
 	{
 		$users = User::all();
-		foreach ($users as $user) {
-			$user->notify(new SendMail($user));
-		}
+
+		$users->each(function ($user, $key) {
+			$user->notify(new SendMail($user, 'welcome'));
+		});
 		return 'mail sent.';
 	}
 }

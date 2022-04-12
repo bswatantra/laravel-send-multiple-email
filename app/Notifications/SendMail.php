@@ -11,17 +11,22 @@ class SendMail extends Notification implements ShouldQueue
 {
 	use Queueable;
 
+	public $tries = 3; // Max tries
+	public $timeout = 15; // Timeout seconds
 
 	public $user;
+	public $type;
+
 
 	/**
 	 * Create a new notification instance.
 	 *
 	 * @return void
 	 */
-	public function __construct($user)
+	public function __construct($user, $type)
 	{
 		$this->user = $user;
+		$this->type = $type;
 	}
 
 	/**
@@ -32,7 +37,7 @@ class SendMail extends Notification implements ShouldQueue
 	 */
 	public function via($notifiable)
 	{
-		return ['mail', 'database'];
+		return ['mail'];
 	}
 
 	/**
@@ -48,7 +53,7 @@ class SendMail extends Notification implements ShouldQueue
 		// 	->action('Notification Action', url('/'))
 		// 	->line('Thank you for using our application!');
 
-		return (new MailMessage)->view('emails.sendmail', ['user' => $this->user]);
+		return (new MailMessage)->view('emails.' . $this->type, ['user' => $this->user]);
 	}
 
 	/**
