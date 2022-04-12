@@ -12,7 +12,8 @@ class SendMailController extends Controller
 		$users = User::all();
 
 		$users->each(function ($user, $key) {
-			$user->notify(new SendMail($user, 'welcome'));
+			// $user->notify(new SendMail($user, 'welcome'));
+			$user->notify((new SendMail($user, 'welcome'))->delay(5));
 		});
 		return 'mail sent.';
 	}
