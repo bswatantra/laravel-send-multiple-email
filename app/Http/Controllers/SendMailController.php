@@ -2,24 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Notifications\SendMail;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Notification;
 
 class SendMailController extends Controller
 {
 	public function __invoke()
 	{
+		$data =  request()->all();
+		$type = $data['type'];
+		unset($data['type']);
+		foreach ($data['users'] as $user) {
+			// Notification::send($user, new SendMail($user, lcfirst($type)));
 
-		// return User::data;
-		// cal api and get data form api with HTTP client
-		// $response = Http:::retry(3, 100)->get('http://worldlink.com/users');
-		$users = User::all();
+			Notification::route('mail', $user['email'])->notify(new SendMail($user, $type));
+		}
+		return response()->json(['message' => 'Mail added to queue.'], 200);
+	}
 
-		$users->each(function ($user, $key) {
-			// $user->notify(new SendMail($user, 'welcome'));
-			$user->notify((new SendMail($user, 'welcome'))->delay(5));
-		});
-		return 'mail sent.';
+
+
+	public function validate_attributes($user)
+	{
+		// dd($user);
+		request()->validate($user, [
+			'username' => 'required',
+			'email' => 'required|email',
+		]);
 	}
 }
