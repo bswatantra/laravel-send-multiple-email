@@ -68,4 +68,9 @@ class SendMail extends Notification implements ShouldQueue
 			'user' => $this->user
 		];
 	}
+
+	public function failed()
+	{
+		info('This job has failed.');
+	}
 }
